@@ -7,7 +7,7 @@ class Ship:
         self.screen=al_game.screen
         self.screen_rect = al_game.screen.get_rect()
         
-        self.image = pygame.image.load('alien/ship.bmp')
+        self.image = pygame.image.load('课程项目/ship.bmp')
         self.rect = self.image.get_rect()
         
         self.rect.midbottom = self.screen_rect.midbottom

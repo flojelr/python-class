@@ -7,7 +7,7 @@ class Alien(Sprite):
         self.screen=al_game.screen
         self.settings=al_game.settings
         
-        self.image=pygame.image.load('alien/alien.bmp')
+        self.image=pygame.image.load('课程项目/alien.bmp')
         self.rect=self.image.get_rect()
         
         self.rect.x=self.rect.width
