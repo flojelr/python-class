@@ -40,6 +40,8 @@ class Scoreboard:
     
     #显示最高分
     def prep_high_score(self):
+        with open('课程项目/test.txt', 'w', encoding='utf-8') as f:
+            f.write(str(self.stats.high_score))
         high_score=round(self.stats.high_score,-1)
         high_score_str="high score:"+f"{high_score:,}"
         self.high_score_image = self.font.render(high_score_str,True,self.text_color,self.settings.bg_color)
