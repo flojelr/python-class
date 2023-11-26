@@ -10,10 +10,12 @@ class Ship(Sprite):
         self.seetings = al_game.settings
         self.screen_rect = al_game.screen.get_rect()
         
-        self.image = pygame.image.load('课程项目/ship1.bmp')
+        self.image = pygame.image.load('课程项目/ship.bmp')
         self.rect = self.image.get_rect()
         
         self.rect.midbottom = self.screen_rect.midbottom
+        
+        self.x = float(self.rect.x)
         
         #移动标志
         self.moving_right = False

@@ -8,6 +8,9 @@ from alien import Alien
 from game_stats import GameStats
 from button import Button
 from scoreboard import Scoreboard
+from star import Star
+
+from random import randint
 
 class AlienInvasion:  
     def __init__(self):  
@@ -22,14 +25,17 @@ class AlienInvasion:
         
         self.ship = Ship(self)
         
+        
         self.bullets=pygame.sprite.Group()
         self.aliens=pygame.sprite.Group()
+        self.stars=pygame.sprite.Group()
         
         self.stats=GameStats(self)
         self.sb=Scoreboard(self)
         
         #创建外星人队伍
         self._creat_fleet()
+        self._creat_star()
         
         self.game_active=False  #游戏开始状态
         self.play_button = Button(self,"Play")
@@ -64,6 +70,9 @@ class AlienInvasion:
         
         #绘制外星人
         self.aliens.draw(self.screen)
+        
+        #绘制星星
+        self.stars.draw(self.screen)
         
         #显示得分
         self.sb.show_score()
@@ -222,6 +231,34 @@ class AlienInvasion:
             self.ship.center_ship() #创建飞船
             
             pygame.mouse.set_visible(False) #鼠标不可见
+    
+    #创建一片星星
+    def _creat_star(self):
+        star =Star(self)
+        star_width,star_height=star.rect.size
+        x=[]
+        y=[]
+        
+        for i in range(0,20):
+            x1=randint(0,20)
+            y1=randint(0,20)
+            while x1 in x:
+                x1=randint(0,20)
+            while y1 in y:
+                y1=randint(0,20)
+            x.append(x1)
+            y.append(y1)
+        for i in range(0,20):
+            current_x,current_y=star_width*x[i],star_height*y[i]
+            self._create_star(current_x,current_y)
+    
+    #创建一个星星
+    def _create_star(self,x_position,y_position):
+        new_star=Star(self)
+        new_star.x=x_position
+        new_star.rect.x=x_position
+        new_star.rect.y=y_position
+        self.stars.add(new_star)
 
 if __name__ == "__main__":  
     ai = AlienInvasion()  
