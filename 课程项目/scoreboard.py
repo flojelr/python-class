@@ -20,6 +20,7 @@ class Scoreboard:
         
         self.prep_ships()
     
+    #显示得分
     def prep_score(self):
         rounded_score=round(self.stats.score,-1) #精确到小数点后几位
         score_str="score:"+f"{rounded_score:,}"
@@ -29,6 +30,7 @@ class Scoreboard:
         self.score_rect.right=self.screen_rect.right-20
         self.score_rect.top=20
     
+    #将得分、等级、最高分、飞船剩余数量放入屏幕
     def show_score(self):
         self.screen.blit(self.score_image,self.score_rect)
         self.screen.blit(self.high_score_image,self.high_score_rect)
@@ -36,6 +38,7 @@ class Scoreboard:
         
         self.ships.draw(self.screen)
     
+    #显示最高分
     def prep_high_score(self):
         high_score=round(self.stats.high_score,-1)
         high_score_str="high score:"+f"{high_score:,}"
@@ -45,11 +48,13 @@ class Scoreboard:
         self.high_score_rect.centerx = self.screen_rect.centerx
         self.high_score_rect.top = self.score_rect.top
     
+    #检查是否是最高分
     def check_high_score(self):
         if self.stats.score>self.stats.high_score:
             self.stats.high_score=self.stats.score 
             self.prep_high_score()
     
+    #显示等级
     def prep_level(self):
         level_str="level:"+str(self.stats.level)
         self.leve_image=self.font.render(level_str,True,self.text_color,self.settings.bg_color)
@@ -58,6 +63,7 @@ class Scoreboard:
         self.level_rect.right=self.score_rect.right
         self.level_rect.top=self.score_rect.bottom+10
     
+    #显示飞船剩余数量
     def prep_ships(self):
         self.ships=Group()
         for ship_number in range(self.stats.ships_left):

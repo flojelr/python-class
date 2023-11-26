@@ -15,10 +15,12 @@ class Alien(Sprite):
         
         self.x = float(self.rect.x)
     
+    #更新位置
     def update(self):
         self.x+=self.settings.alien_speed*self.settings.fleet_direction
         self.rect.x=self.x
     
+    #检查是否到边缘
     def check_edges(self):
         screen_rect=self.screen.get_rect()
-        return (self.rect.right>=screen_rect.right)or(self.rect.left<=0)
+        return (self.rect.right+10>=screen_rect.right)or(self.rect.left-10<=0)
