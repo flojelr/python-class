@@ -25,7 +25,6 @@ class AlienInvasion:
         
         self.ship = Ship(self)
         
-        
         self.bullets=pygame.sprite.Group()
         self.aliens=pygame.sprite.Group()
         self.stars=pygame.sprite.Group()
@@ -61,6 +60,9 @@ class AlienInvasion:
         #背景颜色
         self.screen.fill(self.settings.bg_color) 
         
+        #绘制星星
+        self.stars.draw(self.screen)
+        
         #绘制子弹
         for bullet in self.bullets.sprites():
                 bullet.draw_bullet()
@@ -70,9 +72,6 @@ class AlienInvasion:
         
         #绘制外星人
         self.aliens.draw(self.screen)
-        
-        #绘制星星
-        self.stars.draw(self.screen)
         
         #显示得分
         self.sb.show_score()
@@ -88,7 +87,7 @@ class AlienInvasion:
     def _update_bullets(self):
         self.bullets.update()
         for bullet in self.bullets.copy():
-                if bullet.rect.bottom<=0:
+                if bullet.rect.right >= self.screen.get_rect().right:
                     self.bullets.remove(bullet)   #删除子弹     
         self._check_bullet_alien_collisions()   #检查子弹与外星人的碰撞
     
@@ -126,21 +125,34 @@ class AlienInvasion:
                 exit()
                 
             elif event.type == pygame.KEYDOWN:#按键按下
+                #左右
                 if event.key == pygame.K_RIGHT:
                     self.ship.moving_right =True
                 elif event.key == pygame.K_LEFT:
                     self.ship.moving_left =True
+                #上下
+                elif event.key == pygame.K_UP:
+                    self.ship.moving_up =True
+                elif event.key == pygame.K_DOWN:
+                    self.ship.moving_down =True
+                
                 elif  event.key == pygame.K_q:
                     sys.exit()#退出游戏
                 elif event.key == pygame.K_SPACE: #空格
                     self._fire_bullet() #添加一个新子弹
                     
             elif event.type == pygame.KEYUP:#按键松开
+                #左右
                 if event.key == pygame.K_RIGHT:
                     self.ship.moving_right =False
                 elif event.key == pygame.K_LEFT:
                     self.ship.moving_left =False
-                    
+                #上下
+                elif event.key == pygame.K_UP:
+                    self.ship.moving_up =False
+                elif event.key == pygame.K_DOWN:
+                    self.ship.moving_down =False
+                
             elif event.type == pygame.MOUSEBUTTONDOWN:#鼠标事件检测
                 mouse_pos = pygame.mouse.get_pos()
                 self._check_play_button(mouse_pos)
@@ -156,19 +168,19 @@ class AlienInvasion:
         alien = Alien(self)
         alien_width,alien_height = alien.rect.size
         
-        current_x,current_y=alien_width+80,alien_height+80
-        while current_y < (self.settings.screen_height-4*alien_height):
-            while current_x < (self.settings.screen_width-2*alien_width):
+        current_x,current_y=2*alien_width+80,alien_height+40
+        while current_y < (self.settings.screen_height-alien_height):
+            while current_x < (self.settings.screen_width-alien_width):
                 self._create_alien(current_x,current_y)
                 current_x+=3*alien_width
             
             current_y+=3*alien_height
-            current_x=alien_width+80
+            current_x=2*alien_width+80
     
     #创建一个外星人
     def _create_alien(self,x_position,y_position):
         new_alien=Alien(self)
-        new_alien.x=x_position
+        new_alien.y=y_position
         new_alien.rect.x=x_position
         new_alien.rect.y=y_position
         self.aliens.add(new_alien)
@@ -177,12 +189,13 @@ class AlienInvasion:
     def _check_fleet_edges(self):
         for alien in self.aliens.sprites():
             if alien.check_edges():
-                self._change_fleet_direcition() #改变外星人移动方向并且向下移动
+                self._change_fleet_direcition() #改变外星人移动方向并且向左移动
+                break
     
-    #改变外星人移动方向并且向下移动
+    #改变外星人移动方向并且向左移动
     def _change_fleet_direcition(self):
         for alien in self.aliens.sprites():
-            alien.rect.y+=self.settings.fleet_drop_speed
+            alien.rect.x-=self.settings.fleet_drop_speed
         self.settings.fleet_direction*=-1
     
     def _ship_hit(self):
@@ -205,7 +218,7 @@ class AlienInvasion:
     #检查外星人是否到底屏幕底部
     def _check_aliens_bottom(self):
         for alien in self.aliens.sprites():
-            if alien.rect.bottom >= self.settings.screen_height:
+            if alien.rect.left <= self.screen.get_rect().left:
                 self._ship_hit()
                 break
     
