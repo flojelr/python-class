@@ -252,19 +252,23 @@ class AlienInvasion:
         x=[]
         y=[]
         
-        for i in range(0,20):
-            x1=randint(0,20)
-            y1=randint(0,20)
+        for i in range(0,50):
+            x1=randint(0,60)
+            y1=randint(0,60)
             while x1 in x:
-                x1=randint(0,20)
+                x1=randint(0,60)
             while y1 in y:
-                y1=randint(0,20)
+                y1=randint(0,60)
             x.append(x1)
             y.append(y1)
-        for i in range(0,20):
+        for i in range(0,50):
             current_x,current_y=star_width*x[i],star_height*y[i]
+            while current_x>self.settings.screen_width:
+                current_x=current_x/randint(2,3)
+            while current_y>self.settings.screen_height:
+                current_y=current_y/randint(2,4)
             self._create_star(current_x,current_y)
-    
+
     #创建一个星星
     def _create_star(self,x_position,y_position):
         new_star=Star(self)
