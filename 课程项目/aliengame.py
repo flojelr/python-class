@@ -9,6 +9,7 @@ from game_stats import GameStats
 from button import Button
 from scoreboard import Scoreboard
 from star import Star
+from pause import Pause
 
 from random import randint
 
@@ -32,12 +33,17 @@ class AlienInvasion:
         self.stats=GameStats(self)
         self.sb=Scoreboard(self)
         
+        self.pause=Pause(self)
+        
         #创建外星人队伍
         self._creat_fleet()
         self._creat_star()
         
         self.game_active=False  #游戏开始状态
-        self.play_button = Button(self,"Play")
+        self.paused = False     #游戏是否暂停
+        
+        self.play_button = Button(self,"Play",1)
+        self.pause_button = Button(self,"Pause or Continue",2)
 
     def run_game(self):  
         while True:
@@ -57,29 +63,34 @@ class AlienInvasion:
     #更新屏幕
     def _update_screen(self):
         
-        #背景颜色
-        self.screen.fill(self.settings.bg_color) 
-        
-        #绘制星星
-        self.stars.draw(self.screen)
-        
-        #绘制子弹
-        for bullet in self.bullets.sprites():
-                bullet.draw_bullet()
-        
-        #绘制飞船
-        self.ship.blitme() 
-        
-        #绘制外星人
-        self.aliens.draw(self.screen)
-        
-        #显示得分
-        self.sb.show_score()
-        
-        #绘制play按键
-        if not self.game_active:
-            self.play_button.draw_button()
-        
+        # 判断是否处于暂停状态
+        if self.paused == False:
+            #背景颜色
+            self.screen.fill(self.settings.bg_color) 
+            
+            #绘制星星
+            self.stars.draw(self.screen)
+            
+            #绘制子弹
+            for bullet in self.bullets.sprites():
+                    bullet.draw_bullet()
+            
+            #绘制飞船
+            self.ship.blitme() 
+            
+            #绘制外星人
+            self.aliens.draw(self.screen)
+            
+            #显示得分
+            self.sb.show_score()
+            
+            #绘制play按键
+            if not self.game_active:
+                self.play_button.draw_button()
+            
+            #绘制暂停按键
+            self.pause_button.draw_button()
+            
         #刷新窗口
         pygame.display.flip() 
     
@@ -140,7 +151,22 @@ class AlienInvasion:
                     sys.exit()#退出游戏
                 elif event.key == pygame.K_SPACE: #空格
                     self._fire_bullet() #添加一个新子弹
-                    
+                
+                #游戏暂停与继续
+                elif event.key == pygame.K_p:
+                    if self.paused:
+                        # 游戏继续
+                        self.paused = False
+                    else:
+                        # 游戏暂停
+                        self.paused = True
+                        while(self.paused):
+                            self.pause.show_pause()  #显示暂停按键
+                            self._check_events()
+                            self._check_click_pause() #鼠标点击暂停按键事件检测
+                            pygame.display.flip() 
+                
+                
             elif event.type == pygame.KEYUP:#按键松开
                 #左右
                 if event.key == pygame.K_RIGHT:
@@ -156,6 +182,14 @@ class AlienInvasion:
             elif event.type == pygame.MOUSEBUTTONDOWN:#鼠标事件检测
                 mouse_pos = pygame.mouse.get_pos()
                 self._check_play_button(mouse_pos)
+                self._check_pause_button(mouse_pos)
+    
+    #pause按键鼠标事件检测
+    def _check_click_pause(self):
+        for event in pygame.event.get():
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_pos = pygame.mouse.get_pos()
+                self._check_pause_button(mouse_pos)
     
     #添加一个新子弹
     def _fire_bullet(self):
@@ -242,8 +276,22 @@ class AlienInvasion:
             
             self._creat_fleet()     #创建外星人队
             self.ship.center_ship() #创建飞船
-            
-            pygame.mouse.set_visible(False) #鼠标不可见
+    
+    #检测Pause按键是否被鼠标点击
+    def _check_pause_button(self,mouse_pos):
+        button_clicked = self.pause_button.rect.collidepoint(mouse_pos)
+        if button_clicked :
+            if self.paused:
+                # 游戏继续
+                self.paused = False
+            else:
+                # 游戏暂停
+                self.paused = True
+                while(self.paused):
+                    self.pause.show_pause()
+                    self._check_events()
+                    self._check_click_pause()
+                    pygame.display.flip() 
     
     #创建一片星星
     def _creat_star(self):
